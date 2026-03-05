@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export default function ErrorMessage({ message, onRetry }) {
   return (
     <div
@@ -17,3 +19,8 @@ export default function ErrorMessage({ message, onRetry }) {
     </div>
   );
 }
+
+ErrorMessage.propTypes = {
+  message: PropTypes.string.isRequired,
+  onRetry: PropTypes.func,
+};

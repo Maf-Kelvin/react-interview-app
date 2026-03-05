@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import Navbar from "../components/Navbar";
-import Avatar from "../components/Avatar";
 import Spinner from "../components/Spinner";
 import ErrorMessage from "../components/ErrorMessage";
 import { getUserById, getPostsByUser } from "../services/api";
@@ -20,6 +20,12 @@ function InfoRow({ icon, label, value }) {
   );
 }
 
+InfoRow.propTypes = {
+  icon: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+};
+
 export default function DetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -29,12 +35,14 @@ export default function DetailPage() {
   const [postsLoading, setPostsLoading] = useState(true);
   const [userError, setUserError] = useState(null);
   const [postsError, setPostsError] = useState(null);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     setUserLoading(true);
     setPostsLoading(true);
     setUserError(null);
     setPostsError(null);
+    setImgError(false);
 
     getUserById(id)
       .then(setUser)
@@ -46,6 +54,8 @@ export default function DetailPage() {
       .catch((err) => setPostsError(err.message))
       .finally(() => setPostsLoading(false));
   }, [id]);
+
+  const fullName = user ? `${user.firstName} ${user.lastName}` : "";
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -72,9 +82,25 @@ export default function DetailPage() {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                 <div className="flex flex-col items-center text-center mb-6">
-                  <Avatar name={`${user.firstName} ${user.lastName}`} size="xl" />
+                  {user.image && !imgError ? (
+                    <img
+                      src={user.image}
+                      alt={fullName}
+                      onError={() => setImgError(true)}
+                      className="w-20 h-20 rounded-full object-cover border-4 border-indigo-100"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl font-bold border-4 border-indigo-50">
+                      {fullName
+                        .split(" ")
+                        .slice(0, 2)
+                        .map((w) => w[0])
+                        .join("")
+                        .toUpperCase()}
+                    </div>
+                  )}
                   <h2 className="font-bold text-slate-800 text-xl mt-4">
-                    {user.firstName} {user.lastName}
+                    {fullName}
                   </h2>
                   <p className="text-slate-400 text-sm">@{user.username}</p>
                   <span className="mt-3 inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">
@@ -114,7 +140,17 @@ export default function DetailPage() {
               {postsLoading && <Spinner />}
               {postsError && <ErrorMessage message={postsError} />}
 
-              {!postsLoading && !postsError && (
+              {!postsLoading && !postsError && posts.length === 0 && (
+                <div className="text-center py-16 text-slate-400">
+                  <p className="text-3xl mb-2">📭</p>
+                  <p className="font-semibold text-slate-600">No posts yet</p>
+                  <p className="text-sm mt-1">
+                    This user hasn&apos;t posted anything.
+                  </p>
+                </div>
+              )}
+
+              {!postsLoading && !postsError && posts.length > 0 && (
                 <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
                   {posts.map((post) => (
                     <article
