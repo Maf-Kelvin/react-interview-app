@@ -43,16 +43,16 @@ describe("LoginPage", () => {
   it("shows format error for invalid phone number", async () => {
     renderLoginPage();
     await act(async () => {
-      await userEvent.type(screen.getByLabelText(/phone number/i), "0712345678");
+      await userEvent.type(screen.getByLabelText(/phone number/i), "0812345678");
       fireEvent.blur(screen.getByLabelText(/phone number/i));
     });
-    expect(await screen.findByRole("alert")).toHaveTextContent(/valid Kenyan number/i);
+    expect(await screen.findByRole("alert")).toHaveTextContent(/valid Irish number/i);
   });
 
   it("shows server error for unregistered number", async () => {
     renderLoginPage();
     await act(async () => {
-      await userEvent.type(screen.getByLabelText(/phone number/i), "+254798765432");
+      await userEvent.type(screen.getByLabelText(/phone number/i), "+353887654321");
       fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
     });
     expect(await screen.findByRole("alert")).toHaveTextContent(/not registered/i);
@@ -61,7 +61,7 @@ describe("LoginPage", () => {
   it("navigates to home on successful login", async () => {
     renderLoginPage();
     await act(async () => {
-      await userEvent.type(screen.getByLabelText(/phone number/i), "+254712345678");
+      await userEvent.type(screen.getByLabelText(/phone number/i), "+353812345678");
       fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
     });
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/"), {
@@ -72,7 +72,7 @@ describe("LoginPage", () => {
   it("disables the button while loading", async () => {
     renderLoginPage();
     await act(async () => {
-      await userEvent.type(screen.getByLabelText(/phone number/i), "+254712345678");
+      await userEvent.type(screen.getByLabelText(/phone number/i), "+353812345678");
       fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
     });
     expect(screen.getByRole("button", { name: /signing in/i })).toBeDisabled();

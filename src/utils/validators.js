@@ -1,13 +1,14 @@
 /**
- * Validates a Kenyan phone number.
- * Must start with +254 followed by 7 or 1 and 8 more digits.
+ * Validates an Irish mobile phone number.
+ * Format: +353 8X XXXXXXX (Irish mobile numbers start with 08X)
+ * Example: +353812345678
  */
 export function validatePhone(value) {
   if (!value || value.trim() === "") {
     return "Phone number is required.";
   }
-  if (!/^\+254[17]\d{8}$/.test(value.trim())) {
-    return "Enter a valid Kenyan number starting with +254 (e.g. +254712345678).";
+  if (!/^\+3538[0-9]\d{7}$/.test(value.trim())) {
+    return "Enter a valid Irish number starting with +3538 (e.g. +353812345678).";
   }
   return null;
 }
@@ -16,7 +17,7 @@ export function validatePhone(value) {
  * Mock authentication — only one valid credential for demo purposes.
  */
 export function mockAuthenticate(phone) {
-  return phone === "+254712345678";
+  return phone === "+353812345678";
 }
 
 /**
